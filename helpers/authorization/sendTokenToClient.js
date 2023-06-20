@@ -15,21 +15,12 @@ const generateUserToken = (phone, password) => {
     return bcrypt.hashSync(phone + password, 10);     
 };
 
-const sendJwtToClient = (phone,userToken ,res) => {
-
-  const { JWT_EXPIRE, NODE_ENV } = process.env;
-  const jwtToken = generateJwsFromUser(phone);
+const sendJwtToClient = (phone,name,userToken ,res) => {
+  console.log(phone,name,userToken)
     
-  return res
-  .status(200)
-    .cookie("jwt", jwtToken, {
-      httpOnly: true,
-      expires: new Date(Date.now() + parseInt(JWT_EXPIRE) * 1000 * 60),
-      secure: NODE_ENV === "development" ? false : true,
-    })
-    .json({
+  return res.status(200).json({
       success: true,
-      jwt_token: jwtToken,
+      name: name,
       userToken: userToken,
     });
 };

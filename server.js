@@ -11,7 +11,7 @@ const app = express();
 const port = process.env.PORT;
 app.use(express.static("public"));
 app.use(express.json());
-app.use(cors())
+app.use(cors({origin: true, credentials: true}));
 app.use("/api",router)
 app.listen(port, () => {
     

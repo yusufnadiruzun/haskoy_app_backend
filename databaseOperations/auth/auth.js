@@ -12,7 +12,7 @@ const signupdb = (name, phone, mail, password, status, photourl, usertoken) => {
     } else {
       let query = `INSERT INTO student(name, phone, mail, password,usertoken, status, photourl) VALUES ('${name}','${phone}','${mail}','${password}','${usertoken}','${status}','${photourl}');`;
       connection.query(query, function (err, result) {
-        if (err) throw reject(err);
+        if (err) throw err;
         resolve(true);
       });
     }
@@ -26,32 +26,33 @@ const logindb = (phone, password) => {
     connection.query(query, function (err, result) {
       if (err) throw err;
       if (result.length == 0) {
-        console.log("ilkif");
-
         reject("Kullanıcı adı veya şifre hatalı");
       } else if (!bcrypt.compareSync(password, result[0].password)) {
-        console.log(result[0].password);
-        console.log("elseif");
-
         reject("Kullanıcı adı veya şifre hatalı");
       } else {
-        console.log("else");
         resolve(result);
       }
-      3;
+      
     });
   });
 };
-
 const loginTokendb = (usertoken) => {
   return new Promise((resolve, reject) => {
-    let query = `SELECT * FROM student WHERE usertoken='${usertoken}'`;
+    console.log(usertoken);
+    let query = `select * from student`;
     connection.query(query, function (err, result) {
       if (err) throw err;
       if (result.length == 0) {
-        reject("Token hatalı");
+        reject("userToken not found");
       } else {
-        resolve(result);
+        console.log(result[0])
+        for (let i = 0; i < result.length; i++) {
+          if (usertoken==result[i].usertoken) {
+            console.log("iicciiif")
+            return resolve(result[i]);
+          }
+        }
+        reject("userToken not found");
       }
     });
   });
