@@ -20,6 +20,7 @@ const signupdb = (name, phone, mail, password, status, photourl, usertoken) => {
 };
 
 const logindb = (phone, password) => {
+  console.log("logindb")
   return new Promise((resolve, reject) => {
     console.log(phone, password);
     let query = `SELECT * FROM student WHERE phone='${phone}'`;
@@ -37,6 +38,9 @@ const logindb = (phone, password) => {
   });
 };
 const loginTokendb = (usertoken) => {
+
+  console.log("loginTokendb", usertoken)
+
   return new Promise((resolve, reject) => {
     console.log(usertoken);
     let query = `select * from student`;
@@ -48,7 +52,6 @@ const loginTokendb = (usertoken) => {
         console.log(result[0])
         for (let i = 0; i < result.length; i++) {
           if (usertoken==result[i].usertoken) {
-            console.log("iicciiif")
             return resolve(result[i]);
           }
         }

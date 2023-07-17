@@ -1,5 +1,6 @@
 
-const permissionControldb = require("../databaseOperations/permission/permission");
+const  {permissionControldb, authoriseDb,deletePermissionDb} = require("../databaseOperations/permission/permission");
+
 
 const permissionControl = (req,res) => {
 
@@ -8,4 +9,13 @@ const permissionControl = (req,res) => {
     
 }
 
-module.exports = permissionControl;
+const authorise = (req,res) => {
+    const {student_phone, permission_name} = req.body;
+    authoriseDb(student_phone, permission_name).then(result => {res.send(result)}).catch(err => {res.send(err)});
+}
+const deletePermission = (req,res) => {
+    const {student_phone, permission_name} = req.body;
+    deletePermissionDb(student_phone, permission_name).then(result => {res.send(result)}).catch(err => {res.send(err)});
+}
+
+module.exports = {permissionControl,authorise, deletePermission};
