@@ -1,10 +1,10 @@
 const connection = require("../../helpers/database/connectDatabase");
 const bcrypt = require("bcryptjs");
 
-const signupdb = (name, phone, mail, password, status, photourl, usertoken) => {
+const signupdb = (name,surname, phone, mail, password, status, photourl, usertoken) => {
   return new Promise((resolve, reject) => {
     if (status == "personel") {
-      let query = `INSERT INTO personel_control(name, phone, mail, password,usertoken, status, photourl) VALUES ('${name}','${phone}','${mail}','${password}','${usertoken}','${status}','${photourl}');`;
+      let query = `INSERT INTO personel_control(name,surname, phone, mail, password,usertoken, status, photourl) VALUES ('${name}','${surname}','${phone}','${mail}','${password}','${usertoken}','${status}','${photourl}');`;
       connection.query(query, function (err, result) {
         if (err) throw err;
         resolve(true);
@@ -18,6 +18,11 @@ const signupdb = (name, phone, mail, password, status, photourl, usertoken) => {
     }
   });
 };
+
+// const personelControl = (phone) => {
+//   return new Promise((resolve, reject) => {
+
+// }
 
 const logindb = (phone, password) => {
   console.log("logindb")

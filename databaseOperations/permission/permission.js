@@ -19,7 +19,7 @@ const permissionControldb = (usertoken) => {
         connection.query(query, function (err, result) {
           if (err) throw err;
           if (result.length == 0) {
-            reject("yetki bulunamadı");
+            reject([]);
           } else {
             return resolve(result);
           }
