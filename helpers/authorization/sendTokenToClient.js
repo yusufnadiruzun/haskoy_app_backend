@@ -21,6 +21,8 @@ const sendJwtToClient = (phone,name,userToken ,res) => {
   return res.status(200).json({
       success: true,
       name: name,
+      surname: surname,
+      phone: phone,
       userToken: userToken,
     });
 };
