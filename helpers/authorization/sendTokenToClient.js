@@ -15,9 +15,8 @@ const generateUserToken = (phone, password) => {
     return bcrypt.hashSync(phone + password, 10);     
 };
 
-const sendJwtToClient = (phone,name,userToken ,res) => {
-  console.log(phone,name,userToken)
-    
+const sendJwtToClient = (phone,name,surname,userToken ,res) => {
+ 
   return res.status(200).json({
       success: true,
       name: name,
