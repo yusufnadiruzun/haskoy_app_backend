@@ -100,10 +100,29 @@ const deleteInspectionDb = (inspection_name, student_phone,date) => {
 });
 };
 
+const getInspectionNameDb = () => {
+  return new Promise((resolve, reject) => {
+    let query = `select * from inspection_type;`;
+    connection.query(query, function (err, result) {
+      if (err) throw err;
+      if (result.length == 0) {
+        reject("inspection_name not found");
+      } else {
+        return resolve(result);
+      }
+    });
+  });
+};
+
+const addInspectionBarcodDb = (date,phone, inspection_name) => {
+    return new Promise((resolve, reject) => {
+      if(date == (new Date().getDate() +""+ (new Date().getMonth()+1)  +""+new Date().getFullYear())){
+        addInspectionDb(inspection_name,phone,"var").then((result) => resolve(result)).catch(err => { reject(err) });
+      }
+
+    });
+  }
 
 
 
-
-
-
-module.exports = { createInspectionDb,addInspectionDb,deleteInspectionDb };
+module.exports = { createInspectionDb,addInspectionDb,deleteInspectionDb,getInspectionNameDb,addInspectionBarcodDb };

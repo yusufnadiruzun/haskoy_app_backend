@@ -1,4 +1,4 @@
-const  {createInspectionDb, addInspectionDb,deleteInspectionDb} = require("../databaseOperations/inspection/Inspection")
+const  {createInspectionDb, addInspectionDb,deleteInspectionDb,getInspectionNameDb,addInspectionBarcodDb} = require("../databaseOperations/inspection/Inspection")
 
 const createInspection = async (req, res) => {
 
@@ -17,5 +17,17 @@ const deleteInspection = async (req, res) => {
     deleteInspectionDb(inspection_name,student_phone,date).then(result => { res.send(result) }).catch(err => { res.send(err) });
 }
 
+const getInspectionName = async (req, res) => {
 
-module.exports = { createInspection,addInspection,deleteInspection }
+    getInspectionNameDb().then(result => { res.send(result) }).catch(err => { res.send(err) });
+
+}
+
+const addInspectionBarcod = async (req, res) => {
+    let date = req.params.date;
+    let phone = req.params.phone;
+    let inspection_name = req.params.inspectionName;
+
+    addInspectionBarcodDb(date,phone,inspection_name).then(result => { res.send(result) }).catch(err => { res.send(err) });
+}
+module.exports = { createInspection,addInspection,deleteInspection,getInspectionName,addInspectionBarcod }
