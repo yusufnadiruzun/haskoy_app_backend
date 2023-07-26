@@ -38,13 +38,14 @@ const addInspectionDb = (inspection_name, student_phone,status) => {
             reject("phone does not exists");
           } else {
             student_id = result[0].student_id;
-            query = `select * from inspection where inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}');`;
+            query = `select * from inspection where inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}');`; // STATUS GUNCELLEME EKLENECEK !!!!!!!
             connection.query(query, function (err, result) {
               if (err) throw err;
               if (result.length == 1) {
-                reject("inspection already exists");
+                query = `UPDATE inspection SET status = '${status}' WHERE inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}');`;
+                resolve("updated inspection");
               } else {
-                query = `INSERT INTO inspection(inspection_type_id, student_id,date,status) VALUES ('${inspection_type_id}', '${student_id}','${new Date()}','${status}');`;
+                query = `INSERT INTO inspection(inspection_type_id, student_id,date,status) VALUES ('${inspection_type_id}', '${student_id}','${new Date().getDate() +""+ (new Date().getMonth()+1)  +""+new Date().getFullYear()}','${status}');`;
                 connection.query(query, function (err, result) {
                   if (err) throw err;
                   return resolve(true);
