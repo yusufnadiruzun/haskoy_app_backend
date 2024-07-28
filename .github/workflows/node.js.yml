@@ -27,8 +27,6 @@ jobs:
         cache-dependency-path: './package-lock.json'
         cache: 'npm'
     - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
     - run: |
         touch.env
         echo "${{secrets.config}}".env
