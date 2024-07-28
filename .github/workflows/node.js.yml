@@ -28,5 +28,5 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: |
-        touch.env
+        touch .env
         echo "${{secrets.config}}".env
