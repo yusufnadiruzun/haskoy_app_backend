@@ -1,4 +1,4 @@
-const  {createInspectionDb, addInspectionDb,deleteInspectionDb,getInspectionNameDb,addInspectionBarcodDb} = require("../databaseOperations/inspection/Inspection")
+const  {createInspectionDb, addInspectionDb,deleteInspectionDb,getInspectionNameDb,addInspectionBarcodDb,getAllInspectionDb} = require("../databaseOperations/inspection/Inspection")
 
 const createInspection = async (req, res) => {
 
@@ -6,6 +6,13 @@ const createInspection = async (req, res) => {
     createInspectionDb(inspection_name).then(result => { res.send(result) }).catch(err => { res.send(err) });
 
 }
+
+const getAllInspection = async (req, res) => {
+    
+        getAllInspectionDb().then(result => { res.send(result) }).catch(err => { res.send(err) });
+    
+    }
+
 
 const addInspection = async (req, res) => {
     const { inspection_name, student_phone,status } = req.body;
@@ -27,7 +34,7 @@ const addInspectionBarcod = async (req, res) => {
     let date = req.params.date;
     let phone = req.params.phone;
     let inspection_name = req.params.inspectionName;
-
+    console.log(date,phone,inspection_name)
     addInspectionBarcodDb(date,phone,inspection_name).then(result => { res.send(result) }).catch(err => { res.send(err) });
 }
-module.exports = { createInspection,addInspection,deleteInspection,getInspectionName,addInspectionBarcod }
+module.exports = { createInspection,addInspection,deleteInspection,getInspectionName,addInspectionBarcod,getAllInspection }

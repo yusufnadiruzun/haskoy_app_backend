@@ -10,7 +10,7 @@ const createInspectionDb = (inspection_name) => {
       } else {
         query = `INSERT INTO inspection_type(inspection_name) VALUES ('${inspection_name}');`;
         connection.query(query, function (err, result) {
-          if (err) console.log(err) ;
+          if (err) console.log(err);
           return resolve(true);
           reject("hata");
         });
@@ -19,7 +19,7 @@ const createInspectionDb = (inspection_name) => {
   });
 };
 
-const addInspectionDb = (inspection_name, student_phone,status) => {
+const addInspectionDb = (inspection_name, student_phone, status) => {
   let student_id = "";
   let inspection_type_id = "";
 
@@ -45,13 +45,18 @@ const addInspectionDb = (inspection_name, student_phone,status) => {
                 query = `UPDATE inspection SET status = '${status}' WHERE inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}');`;
                 resolve("updated inspection");
               } else {
-                query = `INSERT INTO inspection(inspection_type_id, student_id,date,status) VALUES ('${inspection_type_id}', '${student_id}','${new Date().getDate() +""+ (new Date().getMonth()+1)  +""+new Date().getFullYear()}','${status}');`;
+                query = `INSERT INTO inspection(inspection_type_id, student_id,date,status) VALUES ('${inspection_type_id}', '${student_id}','${
+                  new Date().getDate() +
+                  "" +
+                  (new Date().getMonth() + 1) +
+                  "" +
+                  new Date().getFullYear()
+                }','${status}');`;
                 connection.query(query, function (err, result) {
                   if (err) throw err;
                   return resolve(true);
                   reject("hata");
                 });
-
               }
             });
           }
@@ -61,43 +66,66 @@ const addInspectionDb = (inspection_name, student_phone,status) => {
   });
 };
 
-const deleteInspectionDb = (inspection_name, student_phone,date) => {
+const deleteInspectionDb = (inspection_name, student_phone, date) => {
   let student_id = "";
   let inspection_type_id = "";
   return new Promise((resolve, reject) => {
-  let query = `select * from inspection_type where inspection_name = ('${inspection_name}');`;
-  connection.query(query, function (err, result) {
-    if (err) throw err;
-    if (result.length == 0) {
-      reject("inspection_name does not exists");
-    } else {
-      inspection_type_id = result[0].inspection_type_id;
-      query = `select * from student where phone = ('${student_phone}');`;
-      connection.query(query, function (err, result) {
-        if (err) throw err;
-        if (result.length == 0) {
-          reject("phone does not exists");
-        } else {
-          student_id = result[0].student_id;
-          query = `select * from inspection where inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}') and date = '${date}';`;
-          connection.query(query, function (err, result) {
-            if (err) throw err;
-            if (result.length == 0) {
-              reject("inspection does not exists");
-            } else {
-              query = `DELETE FROM inspection WHERE inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}');`;
-              connection.query(query, function (err, result) {
-                if (err) throw err;
-                return resolve(true);
-                reject("hata");
-              });
-            }
-          });
-        }
-      });
-    }
+    let query = `select * from inspection_type where inspection_name = ('${inspection_name}');`;
+    connection.query(query, function (err, result) {
+      if (err) throw err;
+      if (result.length == 0) {
+        reject("inspection_name does not exists");
+      } else {
+        inspection_type_id = result[0].inspection_type_id;
+        query = `select * from student where phone = ('${student_phone}');`;
+        connection.query(query, function (err, result) {
+          if (err) throw err;
+          if (result.length == 0) {
+            reject("phone does not exists");
+          } else {
+            student_id = result[0].student_id;
+            query = `select * from inspection where inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}') and date = '${date}';`;
+            connection.query(query, function (err, result) {
+              if (err) throw err;
+              if (result.length == 0) {
+                reject("inspection does not exists");
+              } else {
+                query = `DELETE FROM inspection WHERE inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}');`;
+                connection.query(query, function (err, result) {
+                  if (err) throw err;
+                  return resolve(true);
+                  reject("hata");
+                });
+              }
+            });
+          }
+        });
+      }
+    });
   });
-});
+};
+
+const getAllInspectionDb = () => {
+  return new Promise((resolve, reject) => {
+    let query = `SELECT 
+    i.date,
+    it.inspection_name AS inspection_type,
+    COUNT(*) AS participant_count
+FROM inspection AS i
+JOIN inspection_type AS it ON i.inspection_type_id = it.inspection_type_id
+WHERE i.date < CURDATE()  -- Sadece geçmiş tarihlerdeki yoklamaları listelemek istiyorsanız
+GROUP BY i.date, i.inspection_type_id, it.inspection_name
+ORDER BY i.date;
+`;
+    connection.query(query, function (err, result) {
+      if (err) throw err;
+      if (result.length == 0) {
+        reject("inspection not found");
+      } else {
+        return resolve(result);
+      }
+    });
+  });
 };
 
 const getInspectionNameDb = () => {
@@ -114,15 +142,31 @@ const getInspectionNameDb = () => {
   });
 };
 
-const addInspectionBarcodDb = (date,phone, inspection_name) => {
-    return new Promise((resolve, reject) => {
-      if(date == (new Date().getDate() +""+ (new Date().getMonth()+1)  +""+new Date().getFullYear())){
-        addInspectionDb(inspection_name,phone,"var").then((result) => resolve(result)).catch(err => { reject(err) });
-      }
+const addInspectionBarcodDb = (date, phone, inspection_name) => {
+  return new Promise((resolve, reject) => {
+    if (
+      date ==
+      new Date().getDate() +
+        "" +
+        (new Date().getMonth() + 1) +
+        "" +
+        new Date().getFullYear()
+    ) {
+      console.log("istek geldi");
+      addInspectionDb(inspection_name, phone, "var")
+        .then((result) => resolve(result))
+        .catch((err) => {
+          reject(err);
+        });
+    }
+  });
+};
 
-    });
-  }
-
-
-
-module.exports = { createInspectionDb,addInspectionDb,deleteInspectionDb,getInspectionNameDb,addInspectionBarcodDb };
+module.exports = {
+  createInspectionDb,
+  addInspectionDb,
+  deleteInspectionDb,
+  getInspectionNameDb,
+  addInspectionBarcodDb,
+  getAllInspectionDb,
+};
