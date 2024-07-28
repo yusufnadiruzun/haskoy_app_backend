@@ -87,5 +87,23 @@ const deletePermissionDb = (student_phone, permission_name) => {
     });
 };
 
+const addPermissionDB = (permission_name) =>{
+  return new Promise((resolve, reject) => {
+    let query = `SELECT * FROM permissions WHERE permission_name='${permission_name}'`;
+    connection.query(query, function (err, result) {
+        if (err) throw err;
+        if (result.length > 0) {
+            reject("permission already added");
+        } else {
+            query = `INSERT INTO permissions ( permission_name) VALUES ('${permission_name}');`;
+            connection.query(query, function (err, result) {
+                if (err) throw err;
+                return resolve(true);
+                reject("hata");
+            });
+        }
+    });
+});
+}
 
-module.exports = {permissionControldb, authoriseDb,deletePermissionDb};
+module.exports = {permissionControldb, authoriseDb,deletePermissionDb,addPermissionDB};
