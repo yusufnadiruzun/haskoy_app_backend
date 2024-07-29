@@ -87,6 +87,24 @@ const deletePermissionDb = (student_phone, permission_name) => {
     });
 };
 
+// PERMISSION OPERATIONS -----------
+
+const getAllPermissionDB = () =>{
+  return new Promise((resolve, reject) => {
+    let query = `SELECT * FROM permissions`;
+    connection.query(query, function (err, result) {
+        if (err) throw err;
+        if (result.length > 0) {
+          if (err) throw err;
+          return resolve(result);
+        } else {
+              reject("permission already added");
+
+        }
+    });
+});
+}
+
 const addPermissionDB = (permission_name) =>{
   return new Promise((resolve, reject) => {
     let query = `SELECT * FROM permissions WHERE permission_name='${permission_name}'`;
@@ -106,4 +124,4 @@ const addPermissionDB = (permission_name) =>{
 });
 }
 
-module.exports = {permissionControldb, authoriseDb,deletePermissionDb,addPermissionDB};
+module.exports = {permissionControldb, authoriseDb,deletePermissionDb,addPermissionDB, getAllPermissionDB};

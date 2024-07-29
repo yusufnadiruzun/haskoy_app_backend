@@ -1,5 +1,5 @@
 
-const  {permissionControldb, authoriseDb,deletePermissionDb,addPermissionDB} = require("../databaseOperations/permission/permission");
+const  {permissionControldb, authoriseDb,deletePermissionDb,addPermissionDB, getAllPermissionDB} = require("../databaseOperations/permission/permission");
 
 // USER PERMISSION
 const permissionControl = (req,res) => {
@@ -18,11 +18,16 @@ const deletePermission = (req,res) => {
     deletePermissionDb(student_phone, permission_name).then(result => {res.send(result)}).catch(err => {res.send(err)});
 }
 
-// PERMISSION (add permission)
+// PERMISSION (get all permission_name , add permission)
+
+const getAllPermission = (req,res)=> {
+    getAllPermissionDB().then(result => {res.send(result)}).catch(err => {res.send(err)});
+}
+
 const addPermission = (req,res) =>{
     const {permission_name} = req.body;
     addPermissionDB(permission_name).then(result => {res.send(result)}).catch(err => {res.send(err)});
 
 }
 
-module.exports = {permissionControl,authorise, deletePermission,addPermission };
+module.exports = {permissionControl,authorise, deletePermission,addPermission, getAllPermission };
