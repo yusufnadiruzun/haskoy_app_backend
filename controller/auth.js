@@ -25,7 +25,7 @@ const login = async (req, res) => {
   if (usertoken == "") {
     let usertoken = generateUserToken(phone, password);
    
-    logindb(phone, password)
+    logindb(phone, password, usertoken)
       .then((result) => sendJwtToClient(phone,result[0].name,result[0].surname, usertoken, res))
       .catch((err) =>sendResponse(res, "unsuccess", 400, err));
   } else {
