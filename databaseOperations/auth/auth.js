@@ -84,7 +84,6 @@ const loginTokendb = (usertoken) => {
         for (let i = 0; i < result.length; i++) {
          //if(bcrypt.compareSync(usertoken, result[i].usertoken)){ BU KOD DOGRU CALISMIYOR
            if (usertoken == result[i].usertoken) {
-           console.log("if ici doğru vdbtoken : ", result[i].usertoken ," - -", usertoken)
             return resolve(result[i]);
           }
         }
