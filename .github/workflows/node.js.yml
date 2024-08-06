@@ -27,7 +27,7 @@ jobs:
         cache-dependency-path: './package-lock.json'
         cache: 'npm'
     - run:  sudo systemctl stop mysql
-    - run: npm ci
+    - run: npm ci   
     - run: |
         touch .env
         echo "${{secrets.config}}".env

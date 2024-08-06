@@ -9,6 +9,7 @@ const shortDate = today.toLocaleDateString('tr-TR', {
     month: '2-digit',
     day: '2-digit'
   });
+  console.log("sadas")
   return shortDate;
 }
 
