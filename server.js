@@ -16,5 +16,11 @@ app.use("/api",router)
 app.listen(port, () => {
     
     console.log(`Server is running on port ${port}`);
-
+    const today = new Date();
+    const shortDate = today.toLocaleDateString('tr-TR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+      console.log(shortDate);
 });

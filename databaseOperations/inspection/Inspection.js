@@ -1,4 +1,5 @@
 const connection = require("../../helpers/database/connectDatabase");
+const TodayDate = require("../../helpers/Methods/DateFormater");
 
 const createInspectionDb = (inspection_name) => {
   return new Promise((resolve, reject) => {
@@ -45,13 +46,8 @@ const addInspectionDb = (inspection_name, student_phone, status) => {
                 query = `UPDATE inspection SET status = '${status}' WHERE inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}');`;
                 resolve("updated inspection");
               } else {
-                query = `INSERT INTO inspection(inspection_type_id, student_id,date,status) VALUES ('${inspection_type_id}', '${student_id}','${
-                  new Date().getDate() +
-                  "" +
-                  (new Date().getMonth() + 1) +
-                  "" +
-                  new Date().getFullYear()
-                }','${status}');`;
+                query = `INSERT INTO inspection(inspection_type_id, student_id,date,status) VALUES ('${inspection_type_id}', '${student_id}','${TodayDate()}','${status}');`;
+
                 connection.query(query, function (err, result) {
                   if (err) throw err;
                   return resolve(true);
@@ -143,21 +139,16 @@ const getInspectionNameDb = () => {
 };
 
 const addInspectionBarcodDb = (date, phone, inspection_name) => {
+  // barcod controlü yap
   return new Promise((resolve, reject) => {
-    if (
-      date ==
-      new Date().getDate() +
-        "" +
-        (new Date().getMonth() + 1) +
-        "" +
-        new Date().getFullYear()
-    ) {
-      console.log("istek geldi");
+    if (date == TodayDate()) {
       addInspectionDb(inspection_name, phone, "var")
         .then((result) => resolve(result))
         .catch((err) => {
           reject(err);
         });
+    } else {
+      resolve("wrong date match");
     }
   });
 };
