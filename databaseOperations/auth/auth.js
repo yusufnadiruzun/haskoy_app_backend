@@ -12,7 +12,7 @@ const signupdb = (
   usertoken
 ) => {
   return new Promise((resolve, reject) => {
-    if (status == "personel") {
+    if (level == "personel") {
       let query = `select * from personel_control where phone = ('${phone}');`;
       connection.query(query, function (err, result) {
         if (err) throw err;
