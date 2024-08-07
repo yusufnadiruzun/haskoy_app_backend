@@ -43,11 +43,10 @@ const addInspectionDb = (inspection_name, student_phone, status) => {
             connection.query(query, function (err, result) {
               if (err) throw err;
               if (result.length == 1) {
-                query = `UPDATE inspection SET status = '${status}' WHERE inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}');`;
+                query = `UPDATE inspection SET status = '${status}' WHERE inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}') and date = '${TodayDate()}'`;
                 resolve("updated inspection");
               } else {
                 query = `INSERT INTO inspection(inspection_type_id, student_id,date,status) VALUES ('${inspection_type_id}', '${student_id}','${TodayDate()}','${status}');`;
-
                 connection.query(query, function (err, result) {
                   if (err) throw err;
                   return resolve(true);
@@ -159,7 +158,7 @@ const getInspectionDb = (inspection_name, date) => {
     connection.query(query, function (err, result) {
       if (err) throw err;
       if (result.length == 0) {
-        reject("hata");
+        reject("empty data");
       } else {
         return resolve(result);
       }
