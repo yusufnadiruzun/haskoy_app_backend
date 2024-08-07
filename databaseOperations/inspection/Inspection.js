@@ -105,7 +105,7 @@ const getAllInspectionDb = () => {
   return new Promise((resolve, reject) => {
     let query = `SELECT 
     i.date,
-    it.inspection_name AS inspection_type,
+    it.inspection_name AS inspection_name,
     COUNT(*) AS participant_count
 FROM inspection AS i
 JOIN inspection_type AS it ON i.inspection_type_id = it.inspection_type_id
@@ -153,11 +153,26 @@ const addInspectionBarcodDb = (date, phone, inspection_name) => {
   });
 };
 
+const getInspectionDb = (inspection_name,date) =>{
+  return new Promise((resolve,reject)=>{
+    let query = `select name,surname,level,status from inspection JOIN student on inspection.student_id = student.student_id JOIN inspection_type on inspection_type.inspection_type_id = inspection.inspection_type_id where date='${date}' and inspection_type.inspection_name ='${inspection_name}'`
+    connection.query(query, function (err, result) {
+      if (err) throw err;
+      if (result.length == 0) {
+        reject("hata");
+      } else {
+        return resolve(result);
+      }
+    });
+  })
+}
+
 module.exports = {
   createInspectionDb,
   addInspectionDb,
   deleteInspectionDb,
-  getInspectionNameDb,
   addInspectionBarcodDb,
   getAllInspectionDb,
+  getInspectionNameDb,
+  getInspectionDb
 };
