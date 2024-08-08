@@ -19,7 +19,7 @@ const signupdb = (
         if (result.length > 0) {
           reject("phone already exists");
         } else {
-          query = `INSERT INTO personel_control(name,surname, phone, mail, password,usertoken, status, photourl) VALUES ('${name}','${surname}','${phone}','${mail}','${password}','${usertoken}','${status}','${photourl}');`;
+          query = `INSERT INTO personel_control(name,surname, phone, mail, password,usertoken, level, photourl) VALUES ('${name}','${surname}','${phone}','${mail}','${password}','${usertoken}','${level}','${photourl}');`;
           connection.query(query, function (err, result) {
             if (err) throw err;
             resolve(true);
