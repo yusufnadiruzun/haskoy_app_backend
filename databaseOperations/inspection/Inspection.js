@@ -38,21 +38,19 @@ const addInspectionDb = (inspection_name, student_phone, status) => {
           if (result.length == 0) {
             reject("phone does not exists");
           } else {
-            
             student_id = result[0].student_id;
-            
+
             query = `select * from inspection where inspection_type_id = '${inspection_type_id}' and student_id = '${student_id}' and date = '${TodayDate()}';`; // STATUS GUNCELLEME EKLENECEK !!!!!!!
             connection.query(query, function (err, result) {
               if (err) throw err;
-             
-              if (result.length >0) {
+
+              if (result.length > 0) {
                 reject("mevcut");
               } else {
                 query = `INSERT INTO inspection(inspection_type_id, student_id,date,status) VALUES ('${inspection_type_id}', '${student_id}','${TodayDate()}','${status}');`;
                 connection.query(query, function (err, result) {
                   if (err) throw err;
                   return resolve(true);
-                 
                 });
               }
             });
@@ -159,7 +157,7 @@ const getInspectionDb = (inspection_name, date) => {
     let query = `select name,surname,phone,level,status from inspection JOIN student on inspection.student_id = student.student_id JOIN inspection_type on inspection_type.inspection_type_id = inspection.inspection_type_id where date='${date}' and inspection_type.inspection_name ='${inspection_name}'`;
     connection.query(query, function (err, result) {
       if (err) throw err;
-      
+
       if (result.length == 0) {
         reject("empty data");
       } else {
@@ -169,9 +167,7 @@ const getInspectionDb = (inspection_name, date) => {
   });
 };
 
-
 const updateInspectionDb = (inspection_name, date, student_phone, status) => {
-  
   return new Promise((resolve, reject) => {
     let query = `UPDATE inspection y
 JOIN student s ON y.student_id = s.student_id
@@ -186,14 +182,28 @@ AND y.date = '${date}';
       if (result.affectedRows == 0) {
         reject("hata");
       } else {
-        
-       resolve("updated sdasd ");
+        resolve("updated sdasd ");
       }
     });
   });
 };
 
+const getStudentInspectionDb = (student_phone) => {
+  return new Promise((resolve, reject) => {
+    let query = `select name, surname,phone,inspection_name,date,status from inspection JOIN student on inspection.student_id = student.student_id JOIN inspection_type on inspection_type.inspection_type_id = inspection.inspection_type_id and phone = '${student_phone}' `;
+    connection.query(query, function (err, result) {
+      if (err) throw err;
+
+      if (result.length == 0) {
+        reject("empty data");
+      } else {
+        return resolve(result);
+      }
+    });
+  });
+};
 module.exports = {
+  getStudentInspectionDb,
   createInspectionDb,
   addInspectionDb,
   deleteInspectionDb,
