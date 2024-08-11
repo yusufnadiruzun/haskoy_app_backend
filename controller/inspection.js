@@ -44,7 +44,7 @@ const getInspection =async (req,res) =>{
 }
 const updateInspection = async (req,res) => {
     const { inspection_name,date,student_phone,status } = req.body;
-    updateInspectionDb(inspection_name,date, student_phone,status).then(result => { res.send(result) }).catch(err => { res.send(err) });
+    updateInspectionDb(inspection_name,date,  student_phone,status).then(result => { res.send(result) }).catch(err => { res.send(err) });
 }
 
 const getStudentInspection = (req,res) => {
