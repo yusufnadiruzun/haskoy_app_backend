@@ -74,7 +74,7 @@ const logindb = (phone, password,userToken) => {
 
 const loginTokendb = (usertoken) => {
   return new Promise((resolve, reject) => {
-    let query = `select usertoken from student `;
+    let query = `select * from student `;
     connection.query(query, function (err, result) {
       if (err) throw err;
       if (result.length == 0) {
