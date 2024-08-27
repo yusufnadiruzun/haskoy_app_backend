@@ -23,7 +23,7 @@ const permissionControldb = (usertoken) => {
           } else {
             return resolve(result);
           }
-          reject("hata");
+          reject("error");
         });
       });
     }
