@@ -238,7 +238,24 @@ AND y.date = '${date}';
 
 const getStudentInspectionDb = (student_phone) => {
   return new Promise((resolve, reject) => {
-    let query = `select name, surname,phone,inspection_name,date,status from inspection JOIN student on inspection.student_id = student.student_id JOIN inspection_type on inspection_type.inspection_type_id = inspection.inspection_type_id and phone = '${student_phone}' `;
+    let query = `
+  SELECT
+    name,
+    surname,
+    phone,
+    inspection_name,
+    date,
+    status
+  FROM
+    inspection
+    JOIN student ON inspection.student_id = student.student_id
+    JOIN inspection_type ON inspection_type.inspection_type_id = inspection.inspection_type_id
+  WHERE
+    phone = '${student_phone}'
+  ORDER BY
+    date DESC; -- Tarihe göre azalan sıralama (en yeni önce)
+`;
+
     connection.query(query, function (err, result) {
       if (err) throw err;
 
