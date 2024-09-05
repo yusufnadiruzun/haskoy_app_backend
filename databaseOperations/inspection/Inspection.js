@@ -12,6 +12,7 @@ const createInspectionDb = (inspection_name) => {
         query = `INSERT INTO inspection_type(inspection_name) VALUES ('${inspection_name}');`;
         connection.query(query, function (err, result) {
           if (err) console.log(err);
+          addInspectionToAllStudent(inspection_name).then((res) => console.log(res)).catch((err) => console.log(err));
           return resolve(true);
           reject("hata");
         });
@@ -19,6 +20,43 @@ const createInspectionDb = (inspection_name) => {
     });
   });
 };
+
+const addInspectionToAllStudent = (inspection_name, date) => {
+  return new Promise((resolve, reject) => {
+    let query = `select * from inspection_type where inspection_name = ('${inspection_name}');`;
+    connection.query(query, function (err, result) {
+      if (err) throw err;
+      if (result.length == 0) {
+        reject("inspection_name does not exist");
+      } else {
+        inspection_type_id = result[0].inspection_type_id;
+        query = `select student_id from student;`;
+        connection.query(query, function (err, result) {
+          if (err) throw err;
+          if (result.length > 0) {
+            result.forEach((element) => {
+              
+              query = `INSERT INTO inspection(inspection_type_id, student_id, date, status) VALUES ('${inspection_type_id}', '${element.student_id}', '${TodayDate()}', 'yok');`;
+              connection.query(query, function (err, result) {
+                if (err) throw err;
+                return resolve("Yoklama eklendi");
+              });
+            });
+          }
+        });
+        /*
+        
+        query = `INSERT INTO inspection(inspection_type_id, student_id, date, status) VALUES ('${inspection_type_id}', '${student_id}', '${TodayDate()}', '${status}');`;
+        connection.query(query, function (err, result) {
+          if (err) throw err;
+          return resolve("Yoklama eklendi");
+        });
+        */
+      }
+    });
+  });
+};
+
 const addInspectionDb = (inspection_name, student_phone, status) => {
   let student_id = "";
   let inspection_type_id = "";

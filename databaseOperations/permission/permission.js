@@ -117,7 +117,7 @@ const addPermissionDB = (permission_name) =>{
             connection.query(query, function (err, result) {
                 if (err) throw err;
                 return resolve(true);
-                reject("hata");
+                reject("hataa");
             });
         }
     });
