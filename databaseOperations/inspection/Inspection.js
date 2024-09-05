@@ -58,6 +58,7 @@ const addInspectionToAllStudent = (inspection_name, date) => {
 };
 
 const addInspectionDb = (inspection_name, student_phone, status) => {
+  
   let student_id = "";
   let inspection_type_id = "";
 
