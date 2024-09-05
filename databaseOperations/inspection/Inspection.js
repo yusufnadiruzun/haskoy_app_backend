@@ -39,9 +39,10 @@ const addInspectionToAllStudent = (inspection_name, date) => {
               query = `INSERT INTO inspection(inspection_type_id, student_id, date, status) VALUES ('${inspection_type_id}', '${element.student_id}', '${TodayDate()}', 'yok');`;
               connection.query(query, function (err, result) {
                 if (err) throw err;
-                return resolve("Yoklama eklendi");
+                
               });
             });
+            return resolve("Yoklama eklendi");
           }
         });
         /*
