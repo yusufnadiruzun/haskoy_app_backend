@@ -7,19 +7,19 @@ const signupdb = (
   phone,
   mail,
   password,
-  level,
+  role,
   photourl,
   usertoken
 ) => {
   return new Promise((resolve, reject) => {
-    if (level == "personel") {
+    if (role == "personel") {
       let query = `select * from personel_control where phone = ('${phone}');`;
       connection.query(query, function (err, result) {
         if (err) throw err;
         if (result.length > 0) {
           reject("phone already exists");
         } else {
-          query = `INSERT INTO personel_control(name,surname, phone, mail, password,usertoken, level, photourl) VALUES ('${name}','${surname}','${phone}','${mail}','${password}','${usertoken}','${level}','${photourl}');`;
+          query = `INSERT INTO personel_control(name,surname, phone, mail, password,usertoken, role, photourl) VALUES ('${name}','${surname}','${phone}','${mail}','${password}','${usertoken}','${role}','${photourl}');`;
           connection.query(query, function (err, result) {
             if (err) throw err;
             resolve(true);
@@ -27,13 +27,13 @@ const signupdb = (
         }
       });
     } else {
-      let query = `select * from student where phone = ('${phone}');`;
+      let query = `select * from user where phone = ('${phone}');`;
       connection.query(query, function (err, result) {
         if (err) throw err;
         if (result.length > 0) {
           reject("phone already exists");
         } else {
-          query = `INSERT INTO student(name, surname,phone, mail, password,usertoken, level, photourl) VALUES ('${name}','${surname}','${phone}','${mail}','${password}','${usertoken}','${level}','${photourl}');`;
+          query = `INSERT INTO user(name, surname,phone, mail, password,usertoken, role, photourl) VALUES ('${name}','${surname}','${phone}','${mail}','${password}','${usertoken}','${role}','${photourl}');`;
           connection.query(query, function (err, result) {
             if (err) throw err;
             resolve(true);
@@ -52,7 +52,7 @@ const signupdb = (
 const logindb = (phone, password,userToken) => {
   return new Promise((resolve, reject) => {
     console.log(phone, password);
-    let query = `SELECT * FROM student WHERE phone='${phone}'`;
+    let query = `SELECT * FROM user WHERE phone='${phone}'`;
 
     connection.query(query, function (err, result) {
       if (err) throw err;
@@ -61,7 +61,7 @@ const logindb = (phone, password,userToken) => {
       } else if (!bcrypt.compareSync(password, result[0].password)) {
         reject("Kullanıcı adı veya şifre hatalı");
       } else {
-        query = `UPDATE student SET usertoken = '${userToken}' WHERE phone = '${phone}'`;
+        query = `UPDATE user SET usertoken = '${userToken}' WHERE phone = '${phone}'`;
         connection.query(query, function (err, result) {
           if (err) console.log(err, "hata");
           
@@ -74,7 +74,7 @@ const logindb = (phone, password,userToken) => {
 
 const loginTokendb = (usertoken) => {
   return new Promise((resolve, reject) => {
-    let query = `select * from student `;
+    let query = `select * from user `;
     connection.query(query, function (err, result) {
       if (err) throw err;
       if (result.length == 0) {

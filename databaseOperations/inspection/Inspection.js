@@ -30,13 +30,13 @@ const addInspectionToAllStudent = (inspection_name, date) => {
         reject("inspection_name does not exist");
       } else {
         inspection_type_id = result[0].inspection_type_id;
-        query = `select student_id from student;`;
+        query = `select user_id from user;`;
         connection.query(query, function (err, result) {
           if (err) throw err;
           if (result.length > 0) {
             result.forEach((element) => {
               
-              query = `INSERT INTO inspection(inspection_type_id, student_id, date, status) VALUES ('${inspection_type_id}', '${element.student_id}', '${TodayDate()}', 'yok');`;
+              query = `INSERT INTO inspection(inspection_type_id, user_id, date, status) VALUES ('${inspection_type_id}', '${element.user_id}', '${TodayDate()}', 'yok');`;
               connection.query(query, function (err, result) {
                 if (err) throw err;
                 
@@ -58,9 +58,9 @@ const addInspectionToAllStudent = (inspection_name, date) => {
   });
 };
 
-const addInspectionDb = (inspection_name, student_phone, status) => {
+const addInspectionDb = (inspection_name, user_phone, status) => {
   
-  let student_id = "";
+  let user_id = "";
   let inspection_type_id = "";
 
   return new Promise((resolve, reject) => {
@@ -71,28 +71,28 @@ const addInspectionDb = (inspection_name, student_phone, status) => {
         reject("inspection_name does not exist");
       } else {
         inspection_type_id = result[0].inspection_type_id;
-        query = `select * from student where phone = ('${student_phone}');`;
+        query = `select * from user where phone = ('${user_phone}');`;
         connection.query(query, function (err, result) {
           if (err) throw err;
           if (result.length == 0) {
             reject("phone does not exist");
           } else {
-            student_id = result[0].student_id;
+            user_id = result[0].user_id;
 
-            query = `select * from inspection where inspection_type_id = '${inspection_type_id}' and student_id = '${student_id}' and date = '${TodayDate()}';`;
+            query = `select * from inspection where inspection_type_id = '${inspection_type_id}' and user_id = '${user_id}' and date = '${TodayDate()}';`;
             connection.query(query, function (err, result) {
               if (err) throw err;
 
               if (result.length > 0) {
                 // Mevcut ise status güncelleme işlemi
-                query = `UPDATE inspection SET status = '${status}' WHERE inspection_type_id = '${inspection_type_id}' AND student_id = '${student_id}' AND date = '${TodayDate()}';`;
+                query = `UPDATE inspection SET status = '${status}' WHERE inspection_type_id = '${inspection_type_id}' AND user_id = '${user_id}' AND date = '${TodayDate()}';`;
                 connection.query(query, function (err, result) {
                   if (err) throw err;
                   return resolve("Yoklama güncellendi");
                 });
               } else {
                 // Yoklama mevcut değilse yeni bir kayıt ekleme işlemi
-                query = `INSERT INTO inspection(inspection_type_id, student_id, date, status) VALUES ('${inspection_type_id}', '${student_id}', '${TodayDate()}', '${status}');`;
+                query = `INSERT INTO inspection(inspection_type_id, user_id, date, status) VALUES ('${inspection_type_id}', '${user_id}', '${TodayDate()}', '${status}');`;
                 connection.query(query, function (err, result) {
                   if (err) throw err;
                   return resolve("Yoklama eklendi");
@@ -149,8 +149,8 @@ const addInspectionDb = (inspection_name, student_phone, status) => {
 };
 */
 
-const deleteInspectionDb = (inspection_name, student_phone, date) => {
-  let student_id = "";
+const deleteInspectionDb = (inspection_name, user_phone, date) => {
+  let user_id = "";
   let inspection_type_id = "";
   return new Promise((resolve, reject) => {
     let query = `select * from inspection_type where inspection_name = ('${inspection_name}');`;
@@ -160,20 +160,20 @@ const deleteInspectionDb = (inspection_name, student_phone, date) => {
         reject("inspection_name does not exists");
       } else {
         inspection_type_id = result[0].inspection_type_id;
-        query = `select * from student where phone = ('${student_phone}');`;
+        query = `select * from user where phone = ('${user_phone}');`;
         connection.query(query, function (err, result) {
           if (err) throw err;
           if (result.length == 0) {
             reject("phone does not exists");
           } else {
-            student_id = result[0].student_id;
-            query = `select * from inspection where inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}') and date = '${date}';`;
+            user_id = result[0].user_id;
+            query = `select * from inspection where inspection_type_id = ('${inspection_type_id}') and user_id = ('${user_id}') and date = '${date}';`;
             connection.query(query, function (err, result) {
               if (err) throw err;
               if (result.length == 0) {
                 reject("inspection does not exists");
               } else {
-                query = `DELETE FROM inspection WHERE inspection_type_id = ('${inspection_type_id}') and student_id = ('${student_id}');`;
+                query = `DELETE FROM inspection WHERE inspection_type_id = ('${inspection_type_id}') and user_id = ('${user_id}');`;
                 connection.query(query, function (err, result) {
                   if (err) throw err;
                   return resolve(true);
@@ -242,7 +242,7 @@ const addInspectionBarcodDb = (date, phone, inspection_name) => {
 
 const getInspectionDb = (inspection_name, date) => {
   return new Promise((resolve, reject) => {
-    let query = `select name,surname,phone,level,status from inspection JOIN student on inspection.student_id = student.student_id JOIN inspection_type on inspection_type.inspection_type_id = inspection.inspection_type_id where date='${date}' and inspection_type.inspection_name ='${inspection_name}'`;
+    let query = `select name,surname,phone,role,status from inspection JOIN user on inspection.user_id = user.user_id JOIN inspection_type on inspection_type.inspection_type_id = inspection.inspection_type_id where date='${date}' and inspection_type.inspection_name ='${inspection_name}'`;
     connection.query(query, function (err, result) {
       if (err) throw err;
 
@@ -255,13 +255,13 @@ const getInspectionDb = (inspection_name, date) => {
   });
 };
 
-const updateInspectionDb = (inspection_name, date, student_phone, status) => {
+const updateInspectionDb = (inspection_name, date, user_phone, status) => {
   return new Promise((resolve, reject) => {
     let query = `UPDATE inspection y
-JOIN student s ON y.student_id = s.student_id
+JOIN user s ON y.user_id = s.user_id
 JOIN inspection_type yt ON y.inspection_type_id = yt.inspection_type_id
 SET y.status = '${status}'
-WHERE s.phone = '${student_phone}'
+WHERE s.phone = '${user_phone}'
 AND yt.inspection_name = '${inspection_name}'
 AND y.date = '${date}';
 `;
@@ -276,7 +276,7 @@ AND y.date = '${date}';
   });
 };
 
-const getStudentInspectionDb = (student_phone) => {
+const getStudentInspectionDb = (user_phone) => {
   return new Promise((resolve, reject) => {
     let query = `
   SELECT
@@ -288,10 +288,10 @@ const getStudentInspectionDb = (student_phone) => {
     status
   FROM
     inspection
-    JOIN student ON inspection.student_id = student.student_id
+    JOIN user ON inspection.user_id = user.user_id
     JOIN inspection_type ON inspection_type.inspection_type_id = inspection.inspection_type_id
   WHERE
-    phone = '${student_phone}'
+    phone = '${user_phone}'
   ORDER BY
     date DESC; -- Tarihe göre azalan sıralama (en yeni önce)
 `;
