@@ -11,10 +11,10 @@ const sendResponse = require("../helpers/response/sendResponse");
 const bcrypt = require("bcryptjs");
 
 const signup = async (req, res) => {
-  const { name,surname, phone, mail, password, level, photourl } = req.body;
+  const { name,surname, phone, mail, password, role, photourl } = req.body;
   let hashPassword = bcrypt.hashSync(password, 10);
   let usertoken = generateUserToken(phone, password);
-  return signupdb(name, surname,phone, mail, hashPassword, level, photourl, usertoken)
+  return signupdb(name, surname,phone, mail, hashPassword, role, photourl, usertoken)
     .then((result) => sendJwtToClient(phone,name,surname,usertoken, res))
     .catch((err) => sendResponse(res, "unsuccess", 400, err));
 };

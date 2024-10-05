@@ -10,12 +10,12 @@ const permissionControl = (req,res) => {
 }
 
 const authorise = (req,res) => {
-    const {student_phone, permission_name} = req.body;
-    authoriseDb(student_phone, permission_name).then(result => {res.send(result)}).catch(err => {res.send(err)});
+    const {user_phone, permission_name} = req.body;
+    authoriseDb(user_phone, permission_name).then(result => {res.send(result)}).catch(err => {res.send(err)});
 }
 const deletePermission = (req,res) => {
-    const {student_phone, permission_name} = req.body;
-    deletePermissionDb(student_phone, permission_name).then(result => {res.send(result)}).catch(err => {res.send(err)});
+    const {user_phone, permission_name} = req.body;
+    deletePermissionDb(user_phone, permission_name).then(result => {res.send(result)}).catch(err => {res.send(err)});
 }
 
 // PERMISSION (get all permission_name , add permission)
