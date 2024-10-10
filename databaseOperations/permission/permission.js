@@ -98,7 +98,7 @@ const getAllPermissionDB = () =>{
           if (err) throw err;
           return resolve(result);
         } else {
-              reject("permission already added");
+              reject("no permission founded");
 
         }
     });

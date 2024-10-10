@@ -268,9 +268,9 @@ AND y.date = '${date}';
     connection.query(query, function (err, result) {
       if (err) throw err;
       if (result.affectedRows == 0) {
-        reject("hata");
+        reject("no row affected");
       } else {
-        resolve("updated sdasd ");
+        resolve("updated");
       }
     });
   });
