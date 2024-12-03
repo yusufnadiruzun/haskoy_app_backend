@@ -27,41 +27,45 @@ const addStudyTrackDb = (
         //   if (result.length > 0) {
         //     return reject("this data was already added");
         //   } else {
-            query = `INSERT INTO StudyTrack (user_id, date, course, subject, question_count, correct_answers, incorrect_answers, teacher_note) VALUES ('${user_id}', '${date}', '${course}', '${subject}', '${question_count}', '${correct_answers}', '${incorrect_answers}', '${teacher_note}')`;
-            connection.query(query, function (err, result) {
-              if (err) throw err;
-              return resolve("Study Track Added");
-            });
-          }
+        query = `INSERT INTO StudyTrack (user_id, track_date, course, subject, question_count, correct_answers, incorrect_answers, teacher_note) VALUES ('${user_id}', '${date}', '${course}', '${subject}', '${question_count}', '${correct_answers}', '${incorrect_answers}', '${teacher_note}')`;
+        connection.query(query, function (err, result) {
+          if (err) throw err;
+          return resolve("Study Track Added");
         });
-      }) 
-//     });
-//   });
+      }
+    });
+  });
+  //     });
+  //   });
 };
 
 const getStudyTrackDb = (phone, date, course, subject) => {
+  console.log(phone)
   return new Promise((resolve, reject) => {
-    let query = `SELECT name,surname,phone,date,course,subject FROM user u Join StudyTrack s on u.user_id = s.user_id where phone = ${phone}`;
-
-    if (date) {
-      query += ` AND date = '${date}'`;
+    console.log(phone)
+    let query = `SELECT name,surname,phone,track_date,course,subject,question_count,correct_answers,incorrect_answers FROM user u Join StudyTrack s on u.user_id = s.user_id`
+    if (phone !== undefined && phone !== null && phone !== '' ) {
+      query +=` where phone = ${phone} `;
+     
+    }if(date){
+      query +=` where track_date = '${date}' `;
     }
     if (course) {
-      query += ` AND course = '${course}'`;
+      query +=  ` AND course = '${course}'`;
     }
     if (subject) {
-      query += ` AND subject = '${subject}'`;
-    }
-
-    // Filtre sorgusunu çalıştır
+      query +=  ` AND subject = '${subject}'`;
+    } 
     connection.query(query, function (err, result) {
-      if (err) {
-        return reject(err);
+      if (err) throw err;
+      if (result.length == 0) {
+          reject("track not found");
+      } else {
+          return resolve(result);
       }
-      return resolve(result);
-    });
   });
-};
+  }
+)}
 
 const updateStudyTrackDb = (phone, course, subject, teacher_note) => {
   return new Promise((resolve, reject) => {
@@ -76,7 +80,7 @@ const updateStudyTrackDb = (phone, course, subject, teacher_note) => {
         return reject("Phone number does not exist");
       } else {
         let user_id = result[0].user_id;
-        
+
         // Güncelleme için boş olmayan alanları belirle
         let updateFields = [];
 
@@ -111,4 +115,18 @@ const updateStudyTrackDb = (phone, course, subject, teacher_note) => {
   });
 };
 
-module.exports = { addStudyTrackDb, getStudyTrackDb, updateStudyTrackDb };
+const getClassStudentsDb = (classLevel) => {
+  return new Promise((resolve, reject) => {
+      let query = `select * from user where role = ${classLevel};`;
+      connection.query(query, function (err, result) {
+          if (err) throw err;
+          if (result.length == 0) {
+              reject("students not found");
+          } else {
+              return resolve(result);
+          }
+      });
+  });
+}
+
+module.exports = { addStudyTrackDb, getStudyTrackDb, updateStudyTrackDb,getClassStudentsDb };

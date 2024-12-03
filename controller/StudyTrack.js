@@ -1,4 +1,4 @@
-const {addStudyTrackDb, getStudyTrackDb,updateStudyTrackDb} = require("../databaseOperations/StudyTrack/admin/StudyTrack")
+const {addStudyTrackDb, getStudyTrackDb,updateStudyTrackDb,getClassStudentsDb} = require("../databaseOperations/StudyTrack/admin/StudyTrack")
 
 const addStudyTrack = (req,res) => {
 
@@ -22,4 +22,11 @@ const updateStudyTrack =  (req,res) => {
 
 }
 
-module.exports = {addStudyTrack, getStudyTrack, updateStudyTrack};
+const getClassStudents =  (req,res) => {
+    const { classLevel} = req.body;
+
+    getClassStudentsDb(classLevel).then(result => res.send(result)).catch(err => res.send(err));
+
+}
+
+module.exports = {addStudyTrack, getStudyTrack, updateStudyTrack,getClassStudents};
