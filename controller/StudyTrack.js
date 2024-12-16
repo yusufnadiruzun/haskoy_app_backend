@@ -9,9 +9,9 @@ const addStudyTrack = (req,res) => {
 }
 
 const getStudyTrack =  (req,res) => {
-    const { phone, date, course, subject} = req.body;
+    const { phone, date, course, subject,role} = req.body;
 
-    getStudyTrackDb(phone, date, course, subject).then(result => res.send(result)).catch(err => res.send(err));
+    getStudyTrackDb(phone, date, course, subject,role).then(result => res.send(result)).catch(err => res.send(err));
 
 }
 

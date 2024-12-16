@@ -2,6 +2,7 @@ const {
   logindb,
   signupdb,
   loginTokendb,
+  deleteUserdb
 } = require("../databaseOperations/auth/auth");
 const {
   generateUserToken,
@@ -35,4 +36,14 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { signup, login };
+const deleteUser = async (req,res) => {
+  const { phone } = req.body;
+
+    deleteUserdb(phone)
+      .then(result => {res.send(result)}).catch(err => {res.send(err)})
+      .catch((err) =>sendResponse(res, "unsuccess", 400, err));
+
+};
+
+
+module.exports = { signup, login, deleteUser};
