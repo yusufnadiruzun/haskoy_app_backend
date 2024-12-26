@@ -52,7 +52,7 @@ const addStudyTrackDb = (
 
 const getStudyTrackDb = (phone, date, study_session, course, subject, role) => {
   return new Promise((resolve, reject) => {
-    // Temel sorgu
+    // Temel sorgunun başlangıcı
     let query = `
       SELECT 
         track_date, 
@@ -61,11 +61,9 @@ const getStudyTrackDb = (phone, date, study_session, course, subject, role) => {
       FROM user u 
       JOIN StudyTrack s ON u.user_id = s.user_id
       WHERE u.role = ${role}
-      GROUP BY track_date, study_session
-      ORDER BY STR_TO_DATE(track_date, '%d.%m.%Y') DESC, study_session ASC
     `;
 
-    // Telefon sorgusu varsa
+    // Telefon sorgusu varsa, farklı sorguya geç
     if (phone) {
       query = `
         SELECT 
@@ -77,40 +75,34 @@ const getStudyTrackDb = (phone, date, study_session, course, subject, role) => {
       `;
     }
 
-    // Tarih ve telefon sorgusu birlikte varsa
-    if (date && phone) {
+    // Ek filtreler
+    if (date) {
       query += ` AND track_date = '${date}'`;
-    } else if (date) {
-      // Sadece tarih sorgusu varsa
-      query = `
-        SELECT 
-          name, surname, phone, role, photourl, track_date, study_session, course, subject, 
-          question_count, correct_answers, incorrect_answers
-        FROM user u 
-        JOIN StudyTrack s ON u.user_id = s.user_id 
-        WHERE track_date = '${date}' AND u.role = ${role}
-        ORDER BY STR_TO_DATE(track_date, '%d.%m.%Y') DESC, study_session ASC
-      `;
     }
-
-    // Kurs sorgusu varsa
+    if (study_session) {
+      query += ` AND study_session = '${study_session}'`;
+    }
     if (course) {
       query += ` AND course = '${course}'`;
     }
-
-    // Konu sorgusu varsa
     if (subject) {
       query += ` AND subject = '${subject}'`;
     }
 
-    // Study session sorgusu varsa
-    if (study_session) {
-      query += ` AND study_session = '${study_session}'`;
+    // Telefon yoksa GROUP BY ve ORDER BY ekle
+    if (!phone) {
+      query += `
+        GROUP BY track_date, study_session
+        ORDER BY STR_TO_DATE(track_date, '%d.%m.%Y') DESC, study_session ASC
+      `;
     }
+
+    console.log("Executing Query:", query); // Hata ayıklama için sorguyu göster
 
     // Veritabanı sorgusu
     connection.query(query, (err, result) => {
       if (err) {
+        console.error("Query Error:", err); // Hata detayını göster
         reject(err);
         return;
       }
@@ -124,6 +116,7 @@ const getStudyTrackDb = (phone, date, study_session, course, subject, role) => {
     });
   });
 };
+
 
 
 
