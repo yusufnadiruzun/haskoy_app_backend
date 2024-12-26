@@ -3,6 +3,7 @@ const connection = require("../../../helpers/database/connectDatabase");
 const addStudyTrackDb = (
   phone,
   date,
+  study_session, // Yeni eklenen parametre
   course,
   subject,
   question_count,
@@ -11,53 +12,64 @@ const addStudyTrackDb = (
   teacher_note
 ) => {
   return new Promise((resolve, reject) => {
-    let query = `select * from user where phone = ('${phone}');`;
+    // Kullanıcıyı telefon numarasına göre bul
+    let query = `SELECT * FROM user WHERE phone = '${phone}';`;
     connection.query(query, function (err, result) {
       if (err) throw err;
-      if (result.length == 0) {
-        reject("phone does not exist");
+      if (result.length === 0) {
+        reject("Phone does not exist");
       } else {
         let user_id = result[0].user_id;
 
-        // Daha önce eklenen bir veriyle aynı olup olmadığını kontrol etmek için bu kodu kullanabilirsin
-        // query = `select * from StudyTrack where user_id = '${user_id}' and course = '${course}' and subject = '${subject}'`;
-
-        // connection.query(query, function (err, result) {
-        //   if (err) throw err;
-        //   if (result.length > 0) {
-        //     return reject("this data was already added");
-        //   } else {
-        query = `INSERT INTO StudyTrack (user_id, track_date, course, subject, question_count, correct_answers, incorrect_answers, teacher_note) VALUES ('${user_id}', '${date}', '${course}', '${subject}', '${question_count}', '${correct_answers}', '${incorrect_answers}', '${teacher_note}')`;
+        // Daha önce aynı kullanıcı, aynı tarih ve aynı etüt numarası için veri eklenmiş mi kontrol et
+        query = `SELECT * FROM StudyTrack WHERE user_id = '${user_id}' AND track_date = '${date}' AND study_session = '${study_session}';`;
         connection.query(query, function (err, result) {
           if (err) throw err;
-          return resolve("Study Track Added");
+          if (result.length > 0) {
+            return reject("This data for the given session already exists");
+          } else {
+            // Yeni veri ekle
+            query = `
+              INSERT INTO StudyTrack (
+                user_id, track_date, study_session, course, subject, 
+                question_count, correct_answers, incorrect_answers, teacher_note
+              ) VALUES (
+                '${user_id}', '${date}', '${study_session}', '${course}', '${subject}', 
+                '${question_count}', '${correct_answers}', '${incorrect_answers}', '${teacher_note}'
+              );
+            `;
+            connection.query(query, function (err, result) {
+              if (err) throw err;
+              return resolve("Study Track Added");
+            });
+          }
         });
       }
     });
   });
-  //     });
-  //   });
 };
 
-const getStudyTrackDb = (phone, date, course, subject, role) => {
+
+const getStudyTrackDb = (phone, date, study_session, course, subject, role) => {
   return new Promise((resolve, reject) => {
     // Temel sorgu
     let query = `
       SELECT 
         track_date, 
-        COUNT(*) AS date_student_count
+        study_session, 
+        COUNT(*) AS session_student_count
       FROM user u 
       JOIN StudyTrack s ON u.user_id = s.user_id
       WHERE u.role = ${role}
-      GROUP BY track_date
-      ORDER BY STR_TO_DATE(track_date, '%d.%m.%Y') DESC
+      GROUP BY track_date, study_session
+      ORDER BY STR_TO_DATE(track_date, '%d.%m.%Y') DESC, study_session ASC
     `;
 
     // Telefon sorgusu varsa
     if (phone) {
       query = `
         SELECT 
-          name, surname, phone, role, photourl, track_date, course, subject, 
+          name, surname, phone, role, photourl, track_date, study_session, course, subject, 
           question_count, correct_answers, incorrect_answers
         FROM user u 
         JOIN StudyTrack s ON u.user_id = s.user_id 
@@ -72,12 +84,12 @@ const getStudyTrackDb = (phone, date, course, subject, role) => {
       // Sadece tarih sorgusu varsa
       query = `
         SELECT 
-          name, surname, phone, role, photourl, track_date, course, subject, 
+          name, surname, phone, role, photourl, track_date, study_session, course, subject, 
           question_count, correct_answers, incorrect_answers
         FROM user u 
         JOIN StudyTrack s ON u.user_id = s.user_id 
         WHERE track_date = '${date}' AND u.role = ${role}
-        ORDER BY STR_TO_DATE(track_date, '%d.%m.%Y') DESC
+        ORDER BY STR_TO_DATE(track_date, '%d.%m.%Y') DESC, study_session ASC
       `;
     }
 
@@ -89,6 +101,11 @@ const getStudyTrackDb = (phone, date, course, subject, role) => {
     // Konu sorgusu varsa
     if (subject) {
       query += ` AND subject = '${subject}'`;
+    }
+
+    // Study session sorgusu varsa
+    if (study_session) {
+      query += ` AND study_session = '${study_session}'`;
     }
 
     // Veritabanı sorgusu
@@ -108,16 +125,21 @@ const getStudyTrackDb = (phone, date, course, subject, role) => {
   });
 };
 
-const updateStudyTrackDb = (phone, course, subject, teacher_note) => {
+
+
+const updateStudyTrackDb = (phone, course, subject, study_session, teacher_note) => {
   return new Promise((resolve, reject) => {
     // Telefon numarasına göre kullanıcı ID'sini al
     let query = `SELECT u.user_id FROM user u JOIN StudyTrack s ON u.user_id = s.user_id WHERE u.phone = '${phone}'`;
 
     connection.query(query, function (err, result) {
-      if (err) throw err;
+      if (err) {
+        reject(err);
+        return;
+      }
 
       // Kullanıcı bulunamazsa hata döndür
-      if (result.length == 0) {
+      if (result.length === 0) {
         return reject("Phone number does not exist");
       } else {
         let user_id = result[0].user_id;
@@ -131,6 +153,9 @@ const updateStudyTrackDb = (phone, course, subject, teacher_note) => {
         if (subject) {
           updateFields.push(`subject = '${subject}'`);
         }
+        if (study_session) {
+          updateFields.push(`study_session = '${study_session}'`);
+        }
         if (teacher_note) {
           updateFields.push(`teacher_note = '${teacher_note}'`);
         }
@@ -142,7 +167,10 @@ const updateStudyTrackDb = (phone, course, subject, teacher_note) => {
           )} WHERE user_id = ${user_id}`;
 
           connection.query(query, function (err, updateResult) {
-            if (err) throw err;
+            if (err) {
+              reject(err);
+              return;
+            }
 
             // Başarılı güncelleme sonrası mesaj döndür
             resolve("Study Track Updated Successfully");
@@ -155,6 +183,7 @@ const updateStudyTrackDb = (phone, course, subject, teacher_note) => {
     });
   });
 };
+
 
 const getClassStudentsDb = (classLevel) => {
   return new Promise((resolve, reject) => {
